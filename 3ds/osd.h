@@ -10,17 +10,34 @@
 
 #define osd_input_update input_update
 
-#define GG_ROM      "./ggenie.bin"
-#define AR_ROM      "./areplay.bin"
-#define SK_ROM      "./sk.bin"
-#define SK_UPMEM    "./sk2chip.bin"
-#define CD_BIOS_US  "./bios_CD_U.bin"
-#define CD_BIOS_EU  "./bios_CD_E.bin"
-#define CD_BIOS_JP  "./bios_CD_J.bin"
-#define MD_BIOS     "./bios_MD.bin"
-#define MS_BIOS_US  "./bios_U.sms"
-#define MS_BIOS_EU  "./bios_E.sms"
-#define MS_BIOS_JP  "./bios_J.sms"
-#define GG_BIOS     "./bios.gg"
+#define GG_ROM      "sdmc:/genplus/bios/ggenie.bin"
+#define AR_ROM      "sdmc:/genplus/bios/areplay.bin"
+#define SK_ROM      "sdmc:/genplus/bios/sk.bin"
+#define SK_UPMEM    "sdmc:/genplus/bios/sk2chip.bin"
+#define CD_BIOS_US  "sdmc:/genplus/bios/bios_CD_U.bin"
+#define CD_BIOS_EU  "sdmc:/genplus/bios/bios_CD_E.bin"
+#define CD_BIOS_JP  "sdmc:/genplus/bios/bios_CD_J.bin"
+#define MD_BIOS     "sdmc:/genplus/bios/bios_MD.bin"
+#define MS_BIOS_US  "sdmc:/genplus/bios/bios_U.sms"
+#define MS_BIOS_EU  "sdmc:/genplus/bios/bios_E.sms"
+#define MS_BIOS_JP  "sdmc:/genplus/bios/bios_J.sms"
+#define GG_BIOS     "sdmc:/genplus/bios/bios.gg"
+
+typedef struct {
+    char   console[2048];
+    size_t lines;
+} console_t;
+
+extern console_t top;
+extern console_t bot;
+
+#define error(args ...) do {                    \
+        print(&bot, args);                      \
+    } while(0);
+
+__attribute__((format(printf,2,3)))
+void
+print(console_t  *console,
+      const char *fmt, ...);
 
 #endif
