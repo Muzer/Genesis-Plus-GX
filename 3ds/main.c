@@ -7,7 +7,7 @@
 
 #define SOUND_FREQUENCY 48000
 #define SOUND_SAMPLES_SIZE  2048
-u8 framebuf[4*400*240];
+u8* framebuf;
 
 console_t top;
 console_t bot;
@@ -19,12 +19,7 @@ const u8 *font = font_bin;
 #define CHAR_SIZE_Y (8)
 
 static void
-drawCharacter(u8   *fb,
-              char c,
-              u16  x,
-              u16  y,
-              u16  w,
-              u16  h)
+drawCharacter(u8 *fb, char c, u16 x, u16 y, u16 w, u16 h)
 {
   if(c < ' ')
     return;
@@ -53,12 +48,7 @@ drawCharacter(u8   *fb,
   }
 }
 void
-drawString(u8         *fb,
-           const char *str,
-           u16        x,
-           u16        y,
-           u16        w,
-           u16        h)
+drawString(u8 *fb, const char *str, u16 x, u16 y, u16 w, u16 h)
 {
   if(!fb || !str)
     return;
@@ -80,11 +70,7 @@ drawString(u8         *fb,
 
 /* GFX */
 void
-gfxDrawText(gfxScreen_t screen,
-            gfx3dSide_t side,
-            const char  *str,
-            u16         x,
-            u16         y)
+gfxDrawText(gfxScreen_t screen, gfx3dSide_t side, const char *str, u16 x, u16 y)
 {
   if(!str)
     return;
@@ -96,9 +82,7 @@ gfxDrawText(gfxScreen_t screen,
 }
 
 void
-gfxFillColor(gfxScreen_t screen,
-             gfx3dSide_t side,
-             u8          rgbColor[3])
+gfxFillColor(gfxScreen_t screen, gfx3dSide_t side, u8 rgbColor[3])
 {
   u16 fbWidth, fbHeight;
   u8  *fbAdr = gfxGetFramebuffer(screen, side, &fbWidth, &fbHeight);
@@ -138,9 +122,19 @@ renderFrame()
         print(&bot, "y: %d\n", bitmap.viewport.x);
     }
 
-    // This should be a GX TextureCopy.
     u8* fb = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
+    //memset(fb, 0xff, 2*400*240);
 
+    // This should be a GX TextureCopy.
+    size_t x, y, width=bitmap.viewport.w, height=bitmap.viewport.h;
+    for(x=0; x<width; x++) {
+        for(y=0; y<height; y++) {
+            ((u16*)fb)[240*x + y] = ((u16*)framebuf)[width*(height-y-1) + x];
+        }
+    }
+
+    /*
+    // Correct copy with rgb565 -> rgb8 conv.
     size_t x, y, width=bitmap.viewport.w, height=bitmap.viewport.h;
     for(x=0; x<width; x++) {
         for(y=0; y<height; y++) {
@@ -150,6 +144,18 @@ renderFrame()
             fb[3*240*x + 3*y + 2] = (c565 & 0xf800) >> 8;
         }
     }
+    */
+    /*
+    GX_SetTextureCopy(
+        NULL,
+        framebuf,
+        (width<<16) | height,
+        fb,
+        (400<<16) | 240,
+        2*400*240,
+        (2<<8)|(2<<12)|(1<<24)
+        );
+    */
 
     gfxFlushBuffers();
     gspWaitForVBlank();
@@ -194,8 +200,26 @@ print(console_t  *console,
 /* Glue */
 void input_update_()
 {
-    input.pad[0] = 0;
+    u32 joynum = 0;
+    u32 keys = hidKeysUp();
+
+    input.pad[joynum] = 0;
+
+    if(keys & KEY_A)  input.pad[joynum] |= INPUT_A;
+    if(keys & KEY_B)  input.pad[joynum] |= INPUT_B;
+    if(keys & KEY_L)  input.pad[joynum] |= INPUT_C;
+    if(keys & KEY_START)  input.pad[joynum] |= INPUT_START;
+    if(keys & KEY_X)  input.pad[joynum] |= INPUT_X;
+    if(keys & KEY_Y)  input.pad[joynum] |= INPUT_Y;
+    if(keys & KEY_R)  input.pad[joynum] |= INPUT_Z;
+    if(keys & KEY_SELECT)  input.pad[joynum] |= INPUT_MODE;
+    if(keys & KEY_CPAD_UP) input.pad[joynum] |= INPUT_UP;
+    else if(keys & KEY_CPAD_DOWN) input.pad[joynum] |= INPUT_DOWN;
+    if(keys & KEY_CPAD_LEFT) input.pad[joynum] |= INPUT_LEFT;
+    else if(keys & KEY_CPAD_RIGHT) input.pad[joynum] |= INPUT_RIGHT;
+
     //print(&bot, "input_update()\n");
+    return 1;
 }
 
 int load_archive(char *filename, unsigned char *buffer, int maxsize, char *extension)
@@ -283,6 +307,9 @@ int main(int argc, char* argv[]) {
     fsInit();
     sdmcInit();
 
+    gfxSetScreenFormat(GFX_TOP, GSP_RGB565_OES);
+    framebuf = linearAlloc(2*400*240);
+
     consoleClear(&top);
     consoleClear(&bot);
 
@@ -330,7 +357,7 @@ int main(int argc, char* argv[]) {
         }
 
         u32 keys = hidKeysUp();
-        if(keys & KEY_B)
+        if(keys & KEY_DUP)
             break;
 
         renderFrame();
