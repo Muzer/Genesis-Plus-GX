@@ -130,18 +130,24 @@ renderFrame()
     gfxFillColor(GFX_BOTTOM, GFX_LEFT, bluish);
     gfxDrawText(GFX_BOTTOM, GFX_LEFT, bot.console, 240-8, 0);
 
-    /*if(bitmap.viewport.changed & 1) {
+    if(bitmap.viewport.changed & 1) {
         bitmap.viewport.changed &= ~1;
-        }*/
+        print(&bot, "w: %d\n", bitmap.viewport.w);
+        print(&bot, "h: %d\n", bitmap.viewport.h);
+        print(&bot, "x: %d\n", bitmap.viewport.x);
+        print(&bot, "y: %d\n", bitmap.viewport.x);
+    }
 
+    // This should be a GX TextureCopy.
     u8* fb = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
 
-    size_t x, y;
-    for(x=0; x<400; x++) {
-        for(y=0; y<240; y++) {
-            fb[3*240*x + 3*y    ] = framebuf[4*320*y + 4*x + 0];
-            fb[3*240*x + 3*y + 1] = framebuf[4*320*y + 4*x + 1];
-            fb[3*240*x + 3*y + 2] = framebuf[4*320*y + 4*x + 2];
+    size_t x, y, width=bitmap.viewport.w, height=bitmap.viewport.h;
+    for(x=0; x<width; x++) {
+        for(y=0; y<height; y++) {
+            u16 c565 = ((u16*)framebuf)[width*(height-y-1) + x];
+            fb[3*240*x + 3*y    ] = (c565 & 0x1F) << 3;
+            fb[3*240*x + 3*y + 1] = (c565 & 0x7e0) >> 3;
+            fb[3*240*x + 3*y + 2] = (c565 & 0xf800) >> 8;
         }
     }
 
@@ -189,7 +195,7 @@ print(console_t  *console,
 void input_update_()
 {
     input.pad[0] = 0;
-    print(&bot, "input_update()\n");
+    //print(&bot, "input_update()\n");
 }
 
 int load_archive(char *filename, unsigned char *buffer, int maxsize, char *extension)

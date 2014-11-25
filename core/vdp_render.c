@@ -4177,7 +4177,7 @@ void remap_line(int line)
   }
 
   /* NTSC Filter (only supported for 15 or 16-bit pixels rendering) */
-#if defined(USE_15BPP_RENDERING) || defined(USE_16BPP_RENDERING)
+#if !defined(_3DS) && (defined(USE_15BPP_RENDERING) || defined(USE_16BPP_RENDERING))
   if (config.ntsc)
   {
     if (reg[12] & 0x01)
@@ -4190,7 +4190,7 @@ void remap_line(int line)
     }
   }
   else
-#endif
+  #endif
   {
     /* Convert VDP pixel data to output pixel format */
 #ifdef CUSTOM_BLITTER
