@@ -35,11 +35,8 @@ INCLUDES := 3ds \
 #---------------------------------------------------------------------------------
 ARCH     := -marm
 
-CFLAGS   := -g -Wall -O2 -mthumb-interwork -save-temps \
-            -mcpu=mpcore -mtune=mpcore -fomit-frame-pointer \
-            -mfpu=vfp -ffast-math -mword-relocations \
-            -DUSE_32BPP_RENDERING\
-            $(ARCH)
+CFLAGS   := -O3 -fomit-frame-pointer --param large-function-growth=800 --param inline-unit-growth=200 -Wall -Winline -Wno-strict-aliasing \
+         -mword-relocations -DUSE_16BPP_RENDERING -DLSB_FIRST -DBYTE_ORDER=LITTLE_ENDIAN$(ARCH)
 
 CFLAGS   +=  $(INCLUDE) -DARM11 -D_3DS -std=gnu99
 

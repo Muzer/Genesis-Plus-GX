@@ -7,7 +7,7 @@
 
 #define SOUND_FREQUENCY 48000
 #define SOUND_SAMPLES_SIZE  2048
-u8 framebuf[4*320*240];
+u8 framebuf[4*400*240];
 
 console_t top;
 console_t bot;
@@ -130,10 +130,14 @@ renderFrame()
     gfxFillColor(GFX_BOTTOM, GFX_LEFT, bluish);
     gfxDrawText(GFX_BOTTOM, GFX_LEFT, bot.console, 240-8, 0);
 
+    /*if(bitmap.viewport.changed & 1) {
+        bitmap.viewport.changed &= ~1;
+        }*/
+
     u8* fb = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
 
     size_t x, y;
-    for(x=0; x<320; x++) {
+    for(x=0; x<400; x++) {
         for(y=0; y<240; y++) {
             fb[3*240*x + 3*y    ] = framebuf[4*320*y + 4*x + 0];
             fb[3*240*x + 3*y + 1] = framebuf[4*320*y + 4*x + 1];
@@ -182,7 +186,7 @@ print(console_t  *console,
 }
 
 /* Glue */
-void input_update()
+void input_update_()
 {
     input.pad[0] = 0;
     print(&bot, "input_update()\n");
@@ -248,14 +252,14 @@ int genplus_init()
 
     /* initialize Genesis virtual system */
     memset(&bitmap, 0, sizeof(t_bitmap));
-    bitmap.width        = 400;
+    bitmap.width        = 320;
     bitmap.height       = 240;
-    bitmap.pitch        = (bitmap.width * 4);
+    bitmap.pitch        = (bitmap.width * 2);
     bitmap.data         = framebuf;
     bitmap.viewport.changed = 3;
 
     /* Load game file */
-    if(!load_rom("sdmc:/Contra.smd"))
+    if(!load_rom("sdmc:/genesisrom.bin"))
     {
         print(&bot, "Failed to load rom.\n");
         return 1;
@@ -280,14 +284,13 @@ int main(int argc, char* argv[]) {
     if(!ret) {
         /* initialize system hardware */
         audio_init(SOUND_FREQUENCY, 0);
-        system_init();
 
         // load internal backup RAM
         // load cartridge backup RAM
         // load SRAM
 
-        //system_reset();
-
+        system_init();
+        system_reset();
     }
 
     if(system_hw == SYSTEM_MCD) {

@@ -8,7 +8,7 @@
 #include "shared.h"
 #include "config.h"
 
-#define osd_input_update input_update
+#define osd_input_update input_update_
 
 #define GG_ROM      "sdmc:/genplus/bios/ggenie.bin"
 #define AR_ROM      "sdmc:/genplus/bios/areplay.bin"
