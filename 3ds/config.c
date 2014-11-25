@@ -38,6 +38,7 @@ void set_config_defaults(void)
    config.gg_extra = 0;
    config.ntsc     = 0;
    config.render   = 0;
+   config.lcd      = 0;
 
    /* input options */
    input.system[0] = SYSTEM_GAMEPAD;

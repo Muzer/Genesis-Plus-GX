@@ -127,6 +127,7 @@ renderFrame()
 
     // This should be a GX TextureCopy.
     size_t x, y, width=bitmap.viewport.w, height=bitmap.viewport.h;
+
     for(x=0; x<width; x++) {
         for(y=0; y<height; y++) {
             ((u16*)fb)[240*x + y] = ((u16*)framebuf)[width*(height-y-1) + x];
@@ -198,10 +199,10 @@ print(console_t  *console,
 }
 
 /* Glue */
-void input_update_()
+void input_update()
 {
     u32 joynum = 0;
-    u32 keys = hidKeysUp();
+    u32 keys = hidKeysHeld();
 
     input.pad[joynum] = 0;
 
