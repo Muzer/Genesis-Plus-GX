@@ -7,6 +7,8 @@
 
 #define SOUND_FREQUENCY 48000
 #define SOUND_SAMPLES_SIZE  2048
+static short soundframe[SOUND_SAMPLES_SIZE];
+
 u8* framebuf;
 
 console_t top;
@@ -361,6 +363,7 @@ int main(int argc, char* argv[]) {
         if(keys & KEY_DUP)
             break;
 
+        audio_update(soundframe);
         renderFrame();
     }
 

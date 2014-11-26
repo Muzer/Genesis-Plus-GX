@@ -10,7 +10,7 @@ void set_config_defaults(void)
    /* sound options */
    config.psg_preamp     = 150;
    config.fm_preamp      = 100;
-   config.hq_fm          = 1; /* high-quality resampling */
+   config.hq_fm          = 0; /* high-quality resampling */
    config.psgBoostNoise  = 1;
    config.filter         = 0; /* no filter */
    config.lp_range       = 0x9999; /* 0.6 in 16.16 fixed point */
