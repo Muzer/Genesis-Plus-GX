@@ -113,9 +113,9 @@ renderFrame()
 {
     u8 bluish[] = { 0, 0, 127 };
 
-    gfxFillColor(GFX_BOTTOM, GFX_LEFT, bluish);
+/*    gfxFillColor(GFX_BOTTOM, GFX_LEFT, bluish);
     gfxDrawText(GFX_BOTTOM, GFX_LEFT, bot.console, 240-8, 0);
-
+*/
     if(bitmap.viewport.changed & 1) {
         bitmap.viewport.changed &= ~1;
         print(&bot, "w: %d\n", bitmap.viewport.w);
