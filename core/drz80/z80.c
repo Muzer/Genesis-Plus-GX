@@ -3,6 +3,7 @@
 */
 
 #include <3ds.h>
+#include "osd.h"
 #include "z80.h"
 #include "drz80.h"
 
@@ -13,23 +14,14 @@ void (*z80_writemem)(unsigned int address, unsigned char data);
 unsigned char (*z80_readmem)(unsigned int address);
 void (*z80_writeport)(unsigned int port, unsigned char data);
 unsigned char (*z80_readport)(unsigned int port);
-//Z80_Regs Z80;
-
+Z80_Regs Z80;
 
 struct DrZ80 z80_state;
-#if 0
-#define DBG(x ...) do {                                 \
-        char buf[1024];                                 \
-        sprintf(buf, x);                                \
-        svcOutputDebugString(buf, strlen(buf)+1);       \
-    } while (0)
-#else
-#define DBG(x ...) \
-    (void) 0
-#endif
+
 
 /** STUBS **/
 void z80_write8_stub(unsigned char d, unsigned short a) {
+    DBG("z80_write8 %x, a=%x", d, a);
     z80_writemem(a, d);
 }
 void z80_write16_stub(unsigned short d, unsigned short a) {
@@ -37,12 +29,15 @@ void z80_write16_stub(unsigned short d, unsigned short a) {
     z80_writemem(a+1, d>>8);
 }
 unsigned char z80_in_stub(unsigned short p) {
+    DBG("z80_readport %x", p+0);
     return z80_readport(p);
 }
 void z80_out_stub(unsigned short p,unsigned char d) {
+    DBG("z80_writeport %x", p+0);
     z80_writeport(p, d);
 }
 unsigned char z80_read8_stub(unsigned short a) {
+    DBG("z80_read8 a=%x", a);
     return z80_readmem(a);
 }
 unsigned short z80_read16_stub(unsigned short a) {
@@ -54,10 +49,14 @@ void irq_callback_stub() {
 unsigned int z80_rebaseSP_stub(unsigned short new_sp) {
     DBG("z80_rebasesp %x, base0=%x", new_sp, z80_readmap[0]);
     z80_state.Z80SP_BASE = (unsigned int) z80_readmap[new_sp>>10];
+
+    return z80_state.Z80SP_BASE;
 }
 unsigned int z80_rebasePC_stub(unsigned short new_pc) {
     DBG("z80_rebasepc %x", new_pc);
     z80_state.Z80PC_BASE = (unsigned int) z80_readmap[new_pc>>10];
+
+    return z80_state.Z80PC_BASE;
 }
 
 
@@ -105,9 +104,12 @@ void z80_reset() {
 }
 
 void z80_run(unsigned int cycles) {
-    DBG("z80_run");
+    DBG("z80_run: %x, %x", cycles, cycles - Z80.cycles);
 
-    DrZ80Run(&z80_state, cycles);
+    if(cycles > Z80.cycles) {
+        DrZ80Run(&z80_state, cycles - Z80.cycles);
+        Z80.cycles = cycles;
+    }
 }
 
 void z80_get_context (void *dst) {
@@ -119,10 +121,14 @@ void z80_set_context (void *src) {
 }
 
 void z80_set_irq_line(unsigned int state) {
-    DBG("z80_set_irq %x", state);
-    // TODO
+    DBG("z80_irq: %x", state);
+    z80_state.Z80_IRQ = !!state;
 }
+
 void z80_set_nmi_line(unsigned int state) {
-    DBG("z80_set_nmi %x", state);
-    // TODO
+    DBG("z80_nmi: %x", state);
+    if(state)
+        z80_state.Z80IF |= 8;
+    else
+        z80_state.Z80IF &= ~8;
 }

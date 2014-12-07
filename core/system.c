@@ -620,7 +620,11 @@ void system_frame_gen(int do_skip)
   }
 
   /* assert Z80 interrupt */
+#ifdef _3DS
+  z80_set_irq_line(1);
+#else
   Z80.irq_state = ASSERT_LINE;
+#endif
 
   /* run 68k & Z80 until end of line */
   m68k_run(mcycles_vdp + MCYCLES_PER_LINE);
@@ -674,7 +678,11 @@ void system_frame_gen(int do_skip)
       }
 
       /* clear Z80 interrupt */
+#ifdef _3DS
+      z80_set_irq_line(0);
+#else
       Z80.irq_state = CLEAR_LINE;
+#endif
       zirq = 0;
     }
 
@@ -958,7 +966,11 @@ void system_frame_scd(int do_skip)
   }
 
   /* assert Z80 interrupt */
+#ifdef _3DS
+  z80_set_irq_line(1);
+#else
   Z80.irq_state = ASSERT_LINE;
+#endif
 
   /* run both 68k & CD hardware */
   scd_update(mcycles_vdp + MCYCLES_PER_LINE);
@@ -1008,7 +1020,11 @@ void system_frame_scd(int do_skip)
       }
 
       /* clear Z80 interrupt */
+#ifdef _3DS
+      z80_set_irq_line(0);
+#else
       Z80.irq_state = CLEAR_LINE;
+#endif
       zirq = 0;
     }
 
@@ -1263,7 +1279,11 @@ void system_frame_sms(int do_skip)
           z80_run(Z80.cycles + 1);
         }
 
+#ifdef _3DS
+        z80_set_irq_line(1);
+#else
         Z80.irq_state = ASSERT_LINE;
+#endif
       }
     }
 
@@ -1315,8 +1335,11 @@ void system_frame_sms(int do_skip)
       {
         z80_run(Z80.cycles + 1);
       }
-
+#ifdef _3DS
+      z80_set_irq_line(1);
+#else
       Z80.irq_state = ASSERT_LINE;
+#endif
     }
   }
 
@@ -1348,7 +1371,11 @@ void system_frame_sms(int do_skip)
     vint_pending = 0x20;
     if (reg[1] & 0x20)
     {
+#ifdef _3DS
+          z80_set_irq_line(1);
+#else
       Z80.irq_state = ASSERT_LINE;
+#endif
     }
   }
 

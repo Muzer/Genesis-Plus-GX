@@ -31,9 +31,23 @@ typedef struct {
 extern console_t top;
 extern console_t bot;
 
+#if 0
+#define DBG(x ...) do {                                 \
+        char buf[1024];                                 \
+        sprintf(buf, x);                                \
+        svcOutputDebugString(buf, strlen(buf)+1);       \
+    } while (0)
+#else
+#define DBG(x ...) do {                         \
+        (void) 0;                               \
+    } while(0)
+#endif
+
+
 #define error(args ...) do {                    \
+        DBG(args);                              \
         print(&bot, args);                      \
-    } while(0);
+} while(0);
 
 __attribute__((format(printf,2,3)))
 void

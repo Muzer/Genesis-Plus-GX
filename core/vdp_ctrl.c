@@ -1405,7 +1405,11 @@ unsigned int vdp_z80_ctrl_r(unsigned int cycles)
   hint_pending = vint_pending = 0;
 
   /* Clear Z80 interrupt */
+#ifdef _3DS
+  z80_set_irq_line(0);
+#else
   Z80.irq_state = CLEAR_LINE;
+#endif
 
 #ifdef LOGVDP
   error("[%d(%d)][%d(%d)] VDP Z80 status read -> 0x%x (0x%x) (%x)\n", v_counter, cycles/MCYCLES_PER_LINE-1, cycles, cycles%MCYCLES_PER_LINE, temp, status, Z80.pc.w.l);
