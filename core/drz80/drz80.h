@@ -52,7 +52,7 @@ struct DrZ80
   unsigned int (*z80_rebasePC)(unsigned short new_pc);
 };
 
-extern void DrZ80Run(struct DrZ80 *pcy,unsigned int cyc);
+extern unsigned int DrZ80Run(struct DrZ80 *pcy,unsigned int cyc);
 
 #endif
 

@@ -31,7 +31,7 @@ typedef struct {
 extern console_t top;
 extern console_t bot;
 
-#if 0
+#if 1
 #define DBG(x ...) do {                                 \
         char buf[1024];                                 \
         sprintf(buf, x);                                \

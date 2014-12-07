@@ -21,7 +21,6 @@ struct DrZ80 z80_state;
 
 /** STUBS **/
 void z80_write8_stub(unsigned char d, unsigned short a) {
-    DBG("z80_write8 %x, a=%x", d, a);
     z80_writemem(a, d);
 }
 void z80_write16_stub(unsigned short d, unsigned short a) {
@@ -37,7 +36,6 @@ void z80_out_stub(unsigned short p,unsigned char d) {
     z80_writeport(p, d);
 }
 unsigned char z80_read8_stub(unsigned short a) {
-    DBG("z80_read8 a=%x", a);
     return z80_readmem(a);
 }
 unsigned short z80_read16_stub(unsigned short a) {
@@ -107,8 +105,14 @@ void z80_run(unsigned int cycles) {
     DBG("z80_run: %x, %x", cycles, cycles - Z80.cycles);
 
     if(cycles > Z80.cycles) {
-        DrZ80Run(&z80_state, cycles - Z80.cycles);
-        Z80.cycles = cycles;
+        unsigned int min = (cycles - Z80.cycles) / 15;
+
+        if(min > 0) {
+            unsigned int extra = DrZ80Run(&z80_state, min);
+            DBG("extra: %x", extra);
+
+            Z80.cycles = (min + extra) * 15;
+        }
     }
 }
 

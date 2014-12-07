@@ -1150,6 +1150,7 @@ MAIN_opcodes_POINTER2: .word MAIN_opcodes
 z80_execute_end:
 	;@ save registers in CPU context
 	stmia cpucontext,{z80pc-z80sp}			;@ save Z80 registers
+        rsb r0, z80_icount, #0			;@ return how many additional cycles were executed
 	ldmia sp!,{r4-r12,pc}					;@ restore registers from stack and return to C code
 
 .if INTERRUPT_MODE
