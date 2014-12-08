@@ -22,10 +22,12 @@ DrZ80Ver: .long 0x0001
 ;@---------------------------------------
 
 .macro fetch cycs
-	subs z80_icount,z80_icount,#\cycs
-	ldrplb r0,[z80pc],#1
-	ldrpl pc,[opcodes,r0, lsl #2]
+	cmp z80_icount, #0
 	bmi z80_execute_end
+
+	sub z80_icount,z80_icount,#\cycs
+	ldrb r0,[z80pc],#1
+	ldr pc,[opcodes,r0, lsl #2]
 .endm
 
 .macro eatcycles cycs
