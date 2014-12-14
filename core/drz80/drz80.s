@@ -1,4 +1,3 @@
-      .DATA
 ;@ Reesy's Z80 Emulator Version 0.001
 
 ;@ (c) Copyright 2004 Reesy, All rights reserved
@@ -6,12 +5,14 @@
 
 ;@ For commercial use, separate licencing terms must be obtained.
 
+.data
+
       .global DrZ80Run
       .global DrZ80Ver
 
 	  .equiv INTERRUPT_MODE, 		0		;@0 = Use internal int handler, 1 = Use Mames int handler
-	  .equiv FAST_Z80SP,			1		;@0 = Use mem functions for stack pointer, 1 = Use direct mem pointer
-	  .equiv GNGEO_OPTIM,                   1		;@0 = Use mem handler and rebase pc/sp, 1 = Use optim for gngeo
+	  .equiv FAST_Z80SP,			0		;@0 = Use mem functions for stack pointer, 1 = Use direct mem pointer
+	  .equiv GNGEO_OPTIM,                   0		;@0 = Use mem handler and rebase pc/sp, 1 = Use optim for gngeo
 
 .if INTERRUPT_MODE
 	  .extern Interrupt
@@ -1125,7 +1126,8 @@ DrZ80Ver: .long 0x0001
 	.equ Z80_HALT, 1<<2
 
 ;@ --------------------------- Framework --------------------------
-    
+.text
+
 DrZ80Run:
 	;@ r0 = pointer to cpu context
 	;@ r1 = ISTATES to execute  

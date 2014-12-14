@@ -45,13 +45,13 @@ void irq_callback_stub() {
     (void) 0;
 }
 unsigned int z80_rebaseSP_stub(unsigned short new_sp) {
-    DBG("z80_rebasesp %x, base0=%x", new_sp, z80_readmap[0]);
+    //DBG("z80_rebasesp %x, base0=%x", new_sp, z80_readmap[0]);
     z80_state.Z80SP_BASE = (unsigned int) z80_readmap[new_sp>>10];
 
     return z80_state.Z80SP_BASE;
 }
 unsigned int z80_rebasePC_stub(unsigned short new_pc) {
-    DBG("z80_rebasepc %x", new_pc);
+    //DBG("z80_rebasepc %x", new_pc);
     z80_state.Z80PC_BASE = (unsigned int) z80_readmap[new_pc>>10];
 
     return z80_state.Z80PC_BASE;
@@ -111,7 +111,7 @@ void z80_run(unsigned int cycles) {
             unsigned int extra = DrZ80Run(&z80_state, min);
             DBG("extra: %x", extra);
 
-            Z80.cycles = (min + extra) * 15;
+            Z80.cycles += (min + extra) * 15;
         }
     }
 }
