@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <3ds.h>
 
 #include "shared.h"
 #include "config.h"
@@ -31,7 +32,7 @@ typedef struct {
 extern console_t top;
 extern console_t bot;
 
-#if 0
+#if 1
 #define DBG(x ...) do {                                 \
         char buf[1024];                                 \
         sprintf(buf, x);                                \
@@ -43,10 +44,17 @@ extern console_t bot;
     } while(0)
 #endif
 
+#define CUSTOM_BLITTER(line, width, pixel, src) do {                    \
+        u16* fb = ((u16*)bitmap.data) + (bitmap.viewport.h - 1 - line); \
+        do {                                                            \
+            *fb = pixel[*src++];                                        \
+            fb += 240;                                                  \
+        } while (--width);                                              \
+    } while(0);
 
 #define error(args ...) do {                    \
         DBG(args);                              \
-} while(0);
+    } while(0)
 
 __attribute__((format(printf,2,3)))
 void

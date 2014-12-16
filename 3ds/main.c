@@ -9,7 +9,7 @@
 #define SOUND_SAMPLES_SIZE  2048
 static short soundframe[SOUND_SAMPLES_SIZE];
 
-u8* framebuf;
+u16* old_fb;
 
 
 void
@@ -46,17 +46,18 @@ renderFrame()
         print(&bot, "y: %d\n", bitmap.viewport.x);*/
     }
 
-    u8* fb = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
+    bitmap.data = old_fb;
+    old_fb = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
     //memset(fb, 0xff, 2*400*240);
 
     // This should be a GX TextureCopy.
-    size_t x, y, width=bitmap.viewport.w, height=bitmap.viewport.h;
+    /*size_t x, y, width=bitmap.viewport.w, height=bitmap.viewport.h;
 
     for(x=0; x<width; x++) {
         for(y=0; y<height; y++) {
             ((u16*)fb)[240*x + y] = ((u16*)framebuf)[width*(height-y-1) + x];
         }
-    }
+        }*/
 
     /*
     // Correct copy with rgb565 -> rgb8 conv.
@@ -174,8 +175,11 @@ int genplus_init()
     bitmap.width        = 320;
     bitmap.height       = 240;
     bitmap.pitch        = (bitmap.width * 2);
-    bitmap.data         = framebuf;
+    bitmap.data         = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
     bitmap.viewport.changed = 3;
+
+
+    old_fb = gfxGetFramebuffer(GFX_TOP, GFX_LEFT, NULL, NULL);
 
     /* Load game file */
     if(!load_rom("sdmc:/genesisrom.bin"))
@@ -197,7 +201,7 @@ int main(int argc, char* argv[]) {
     sdmcInit();
 
     gfxSetScreenFormat(GFX_TOP, GSP_RGB565_OES);
-    framebuf = linearAlloc(2*400*240);
+
 
     int ret = genplus_init();
     if(!ret) {
