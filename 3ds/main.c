@@ -195,7 +195,7 @@ int genplus_init()
 int main(int argc, char* argv[]) {
     srvInit();
     aptInit(APPID_APPLICATION);
-    gfxInit();
+    gfxInitDefault();
     hidInit(NULL);
     fsInit();
     sdmcInit();
